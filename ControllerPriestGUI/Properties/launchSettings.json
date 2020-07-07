@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ControllerPriestGUI": {
+      "commandName": "Project"
+    },
+    "ConsoleDebug": {
+      "commandName": "Executable"
+    }
+  }
+}
