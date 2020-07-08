@@ -18,15 +18,19 @@ namespace ControllerPriestGUI.Logic
     class PriestInput
     {
         private Controller[] controllers;
+
         private int master = -1;
         private int output = -1;
+        private int lastPacketNum = -1;
+        private bool allowTakeControl = false;
+        
         private ViGEmClient client;
         private IXbox360Controller xController;
         private Gamepad masterSwitchState;
-        private int lastPacketNum = -1;
 
         public int Output { get => output; set => output = value; }
         public int Master { get => master; set => master = value; }
+        public bool TakeControl { get => allowTakeControl; set => allowTakeControl = value; }
 
         /// <summary>
         /// Startup PriestInput class.
@@ -99,7 +103,8 @@ namespace ControllerPriestGUI.Logic
                     }
                 }
             }
-            else if (output != -1 && master == -1)
+            
+            if ((output != -1 && master == -1) || allowTakeControl)
             {
                 //If no master has been set, but output is set we should see if any controller wants to manually grab control.
                 for (int i = 0; i < controllers.Length; i++)

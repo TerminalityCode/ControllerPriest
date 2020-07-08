@@ -162,5 +162,15 @@ namespace ControllerPriestGUI
                     input.Master = con_master_combo.SelectedIndex;
             }
         }
+
+        /// <summary>
+        /// When the take control checkbox has been clicked on.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cbxAllowTakeControl_Checked(object sender, RoutedEventArgs e)
+        {
+            input.TakeControl = (bool)cbxAllowTakeControl.IsChecked;
+        }
     }
 }

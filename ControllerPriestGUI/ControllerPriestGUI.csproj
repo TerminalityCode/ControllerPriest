@@ -8,11 +8,22 @@
     <Company>Rolling Retro</Company>
     <Product>Controller Priest</Product>
     <PackageProjectUrl>https://twitch.tv/rollingretro</PackageProjectUrl>
+    <AssemblyName>ControllerPriest</AssemblyName>
+    <RootNamespace>ControllerPriest</RootNamespace>
+    <PackageIcon>logo.png</PackageIcon>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Nefarius.ViGEm.Client" Version="1.16.150" />
     <PackageReference Include="SharpDX.XInput" Version="4.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
