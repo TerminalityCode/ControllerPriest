@@ -5,25 +5,19 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <Authors>Terminality</Authors>
-    <Company>Rolling Retro</Company>
+    <Company></Company>
     <Product>Controller Priest</Product>
-    <PackageProjectUrl>https://twitch.tv/rollingretro</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/TerminalityCode</PackageProjectUrl>
     <AssemblyName>ControllerPriest</AssemblyName>
     <RootNamespace>ControllerPriest</RootNamespace>
-    <PackageIcon>logo.png</PackageIcon>
+    <PackageIcon></PackageIcon>
     <Version>0.2.0</Version>
+    <Description>A way to unify and output controllers on one port.</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Nefarius.ViGEm.Client" Version="1.16.150" />
     <PackageReference Include="SharpDX.XInput" Version="4.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\logo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>
