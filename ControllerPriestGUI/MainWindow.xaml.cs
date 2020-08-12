@@ -22,10 +22,11 @@ namespace ControllerPriestGUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        PriestInput input = new PriestInput();
+        PriestInput input;
         SolidColorBrush disconnectedColour = new SolidColorBrush(Color.FromRgb(230, 0, 0));
         SolidColorBrush connectedColour = new SolidColorBrush(Color.FromRgb(0, 230, 0));
         Label[] con_status = new Label[4];
+        
         String strConnected = "CONNECTED";
         String strDisconnected = "DISCONNECTED";
         String strStart = "START";
@@ -35,6 +36,7 @@ namespace ControllerPriestGUI
         String WarnOutputMaster = "You can't set the master controller to be the same as the output controller! Please choose another controller slot!";
         String WarnMasterDisconnect = "No controller is connected on this port! Please choose another controller port to be master.";
         String WarnErrorType = "Controller Error";
+        String strAboutMenu = "Created By TerminalityCode\n\nBuilt With Help From ViGEm & SharpInput\n\ngithub.com/TerminalityCode";
         bool emulatedStart = false;
         
         /// <summary>
@@ -43,7 +45,8 @@ namespace ControllerPriestGUI
         public MainWindow()
         {
             InitializeComponent();
-            input.Start();
+            
+            input = new PriestInput();
             input.Update();
             PriestInputUpdate();
 
@@ -72,14 +75,11 @@ namespace ControllerPriestGUI
             {
                 var initialCheck = input.CheckConnections();
                 input.StartOutputController();
-                var secondaryCheck = input.CheckConnections();
 
-                for (int i = 0; i < initialCheck.Length; i++)
+                
+                while (input.Output == -1)
                 {
-                    if (!initialCheck[i] && secondaryCheck[i])
-                    {
-                        input.Output = i;
-                    }
+                    input.Output = DetectOutput(initialCheck);
                 }
 
                 emulatedStart = true;
@@ -93,6 +93,21 @@ namespace ControllerPriestGUI
                 input.StopOutputController();
                 input.Output = -1;
             }
+        }
+
+        public int DetectOutput(bool[] initialCheck)
+        {
+            var secondaryCheck = input.CheckConnections();
+
+            for (int i = 0; i < initialCheck.Length; i++)
+            {
+                if (!initialCheck[i] && secondaryCheck[i])
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         /// <summary>
@@ -171,6 +186,16 @@ namespace ControllerPriestGUI
         private void cbxAllowTakeControl_Checked(object sender, RoutedEventArgs e)
         {
             input.TakeControl = (bool)cbxAllowTakeControl.IsChecked;
+        }
+
+        private void menuItem_Close(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void menuItem_About(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(strAboutMenu, "About Program");
         }
     }
 }

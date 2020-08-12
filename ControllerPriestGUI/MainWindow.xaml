@@ -22,6 +22,14 @@
         <Button x:Name="btn_emu_con" Content="START" HorizontalAlignment="Left" Margin="500,93,0,0" VerticalAlignment="Top" Width="123" Click="ActivateEmulatedController"/>
         <ComboBox x:Name="con_master_combo" HorizontalAlignment="Left" Margin="500,158,0,0" VerticalAlignment="Top" Width="123" SelectionChanged="MasterControllerSelectionChanged"/>
         <Label x:Name="lbl_master_set" Content="Current Master" HorizontalAlignment="Left" Margin="516,127,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.49,0.521" FontWeight="Bold"/>
-        <CheckBox x:Name="cbxAllowTakeControl" Content="Players Take Control" HorizontalAlignment="Left" Margin="499,202,0,0" VerticalAlignment="Top" Width="129" Checked="cbxAllowTakeControl_Checked" RenderTransformOrigin="0.662,0.516"/>
+        <CheckBox x:Name="cbxAllowTakeControl" Content="Players Take Control" HorizontalAlignment="Left" Margin="499,202,0,0" VerticalAlignment="Top" Width="129" Checked="cbxAllowTakeControl_Checked" RenderTransformOrigin="0.662,0.516" Visibility="Hidden"/>
+        <Menu x:Name="menu" Margin="0,0,0,390" HorizontalAlignment="Center" Width="800">
+            <MenuItem Header="File" Margin="10,0,0,0">
+                <MenuItem Header="Exit" Click="menuItem_Close"/>
+            </MenuItem>
+            <MenuItem Header="Help" Margin="0,0,0,0">
+                <MenuItem Header="About" Click="menuItem_About"/>
+            </MenuItem>
+        </Menu>
     </Grid>
 </Window>

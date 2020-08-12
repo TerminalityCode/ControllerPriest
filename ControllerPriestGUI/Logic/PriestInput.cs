@@ -35,7 +35,7 @@ namespace ControllerPriestGUI.Logic
         /// <summary>
         /// Startup PriestInput class.
         /// </summary>
-        public void Start()
+        public PriestInput()
         {
             client = new ViGEmClient();
             xController = client.CreateXbox360Controller();
@@ -63,6 +63,8 @@ namespace ControllerPriestGUI.Logic
                     else
                     {
 
+                        //TODO: Is there a better way of doing this? Am I being stupid? I feel like I am.
+                        // It would be nice if we had direct access to pass straight to XInput.h state var, like I could do in C++.
                         xController.SetButtonState(Xbox360Button.A, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.A));
                         xController.SetButtonState(Xbox360Button.B, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.B));
                         xController.SetButtonState(Xbox360Button.X, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.X));
@@ -129,9 +131,7 @@ namespace ControllerPriestGUI.Logic
         /// </summary>
         public void ChangeMaster()
         {
-            bool newControlFound = false;
-
-            for (int i = master + 1; i != master && !newControlFound; i++)
+            for (int i = master + 1; i != master; i++)
             {
                 if (i >= 4)
                     i = 0;
@@ -139,7 +139,7 @@ namespace ControllerPriestGUI.Logic
                 if (controllers[i].IsConnected && i != output)
                 {
                     master = i;
-                    newControlFound = true;
+                    return;
                 }
             }
         }
@@ -196,11 +196,7 @@ namespace ControllerPriestGUI.Logic
         /// <returns></returns>
         public bool ChangeMasterTriggered(State state)
         {
-
-            if (state.Gamepad.Buttons == masterSwitchState.Buttons)
-                return true;
-
-            return false;
+            return (state.Gamepad.Buttons == masterSwitchState.Buttons);
         }
 
     }
