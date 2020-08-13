@@ -1,4 +1,4 @@
-== Controller Priest ==
+==Controller Priest==
 
 This project has been created as a means to unify multiple controller inputs to a single output port. This is a potentially niche problem but should you have the problem, hopefully this tool can help.
 
