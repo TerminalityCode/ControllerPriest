@@ -30,4 +30,4 @@ That's all. If you got all that, you should be fine.
 
 ## How To Use The Tool
 
-Might be self explanatory, but the wiki has a guide on using the tool.
+Might be self explanatory, [but the wiki has a guide on using the tool.](https://github.com/TerminalityCode/ControllerPriest/wiki/How-To-Use-Controller-Priest)
