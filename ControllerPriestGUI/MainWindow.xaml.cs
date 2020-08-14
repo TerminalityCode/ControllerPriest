@@ -35,7 +35,10 @@ namespace ControllerPriestGUI
         String strMaster = "MASTER";
         String WarnOutputMaster = "You can't set the master controller to be the same as the output controller! Please choose another controller slot!";
         String WarnMasterDisconnect = "No controller is connected on this port! Please choose another controller port to be master.";
+        String WarnOutputPort = "Output doesn't appear to be on Port 1, in most circumstances it's better for Output to be on Port 1.\n\n If you intended for Output not to be on Port 1, then you can ignore this message.\n\nIf not then turn off" +
+            " all controllers and the emulated controllers. Start the emulated controller, if it still doesn't appear on Port 1, you might need to stop and restart a couple of times until it cycles to the first port.";
         String WarnErrorType = "Controller Error";
+        String WarnInfoType = "Information";
         String strAboutMenu = "Created By TerminalityCode\n\nBuilt With Help From ViGEm & SharpInput\n\ngithub.com/TerminalityCode";
         bool emulatedStart = false;
         
@@ -83,8 +86,12 @@ namespace ControllerPriestGUI
                 }
 
                 emulatedStart = true;
-
                 btn_emu_con.Content = strStop;
+
+                if (input.Output != 0)
+                {
+                    MessageBox.Show(WarnOutputPort, WarnInfoType, MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             }
             else
             {
