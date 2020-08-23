@@ -51,7 +51,7 @@ namespace ControllerPriestGUI.Logic
         {
             if (output != -1 && master != -1)
             {
-                if (master != -1 && controllers[master].IsConnected && controllers[master].GetState().PacketNumber != lastPacketNum)
+                if (controllers[master].IsConnected && controllers[master].GetState().PacketNumber != lastPacketNum)
                 {
                     State currState = controllers[master].GetState();
                     lastPacketNum = currState.PacketNumber;
@@ -95,11 +95,11 @@ namespace ControllerPriestGUI.Logic
                     }
 
                 }
-                else if (master != -1 && !controllers[master].IsConnected)
+                else if (!controllers[master].IsConnected)
                 {
                     ChangeMaster();
 
-                    if (master != -1 && !controllers[master].IsConnected)
+                    if (!controllers[master].IsConnected)
                     {
                         master = -1;
                     }
