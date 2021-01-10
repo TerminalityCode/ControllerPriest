@@ -12,12 +12,16 @@ using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 using SharpDX.XInput;
+using ControllerPriest.Logic;
 
 namespace ControllerPriestGUI.Logic
 {
     class PriestInput
     {
         private Controller[] controllers;
+        private ControllerConfig control_config;
+        private Dictionary<Xbox360Button, GamepadButtonFlags> player_mapping_2;
+        private Dictionary<Xbox360Button, GamepadButtonFlags> default_mapping;
 
         private int master = -1;
         private int output = -1;
@@ -26,6 +30,7 @@ namespace ControllerPriestGUI.Logic
         
         private ViGEmClient client;
         private IXbox360Controller xController;
+        //Button combination to switch controller.
         private Gamepad masterSwitchState;
 
         public int Output { get => output; set => output = value; }
@@ -38,10 +43,10 @@ namespace ControllerPriestGUI.Logic
         public PriestInput()
         {
             client = new ViGEmClient();
-            xController = client.CreateXbox360Controller();
             controllers = new[] { new Controller(UserIndex.One), new Controller(UserIndex.Two), new Controller(UserIndex.Three), new Controller(UserIndex.Four) };
 
             masterSwitchState.Buttons = (GamepadButtonFlags.LeftShoulder | GamepadButtonFlags.RightShoulder | GamepadButtonFlags.RightThumb | GamepadButtonFlags.LeftThumb);
+            control_config = new ControllerConfig(ref client);
         }
 
         /// <summary>
@@ -62,36 +67,21 @@ namespace ControllerPriestGUI.Logic
                     }
                     else
                     {
-
                         //TODO: Is there a better way of doing this? Am I being stupid? I feel like I am.
                         // It would be nice if we had direct access to pass straight to XInput.h state var, like I could do in C++.
-                        xController.SetButtonState(Xbox360Button.A, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.A));
-                        xController.SetButtonState(Xbox360Button.B, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.B));
-                        xController.SetButtonState(Xbox360Button.X, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.X));
-                        xController.SetButtonState(Xbox360Button.Y, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.Y));
+                        foreach (KeyValuePair<Xbox360Button, GamepadButtonFlags> entry in control_config.GetControllerMapping())
+                        {
+                            control_config.GetController().SetButtonState(entry.Key, currState.Gamepad.Buttons.HasFlag(entry.Value));
+                        }
 
-                        xController.SetButtonState(Xbox360Button.Up, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadUp));
-                        xController.SetButtonState(Xbox360Button.Down, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadDown));
-                        xController.SetButtonState(Xbox360Button.Left, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadLeft));
-                        xController.SetButtonState(Xbox360Button.Right, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadRight));
+                        control_config.SetAxisValue(Xbox360Axis.LeftThumbX, currState.Gamepad.LeftThumbX);
+                        control_config.SetAxisValue(Xbox360Axis.LeftThumbY, currState.Gamepad.LeftThumbY);
+                        control_config.SetAxisValue(Xbox360Axis.RightThumbX, currState.Gamepad.RightThumbX);
+                        control_config.SetAxisValue(Xbox360Axis.RightThumbY, currState.Gamepad.RightThumbY);
+                        control_config.SetSliderValue(Xbox360Slider.LeftTrigger, currState.Gamepad.LeftTrigger);
+                        control_config.SetSliderValue(Xbox360Slider.RightTrigger, currState.Gamepad.RightTrigger);
 
-                        xController.SetButtonState(Xbox360Button.Start, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.Start));
-                        xController.SetButtonState(Xbox360Button.Back, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.Back));
-
-                        xController.SetButtonState(Xbox360Button.RightThumb, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.RightThumb));
-                        xController.SetButtonState(Xbox360Button.LeftThumb, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.LeftThumb));
-
-                        xController.SetButtonState(Xbox360Button.LeftShoulder, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.LeftShoulder));
-                        xController.SetButtonState(Xbox360Button.RightShoulder, currState.Gamepad.Buttons.HasFlag(GamepadButtonFlags.RightShoulder));
-
-                        xController.SetAxisValue(Xbox360Axis.LeftThumbX, currState.Gamepad.LeftThumbX);
-                        xController.SetAxisValue(Xbox360Axis.LeftThumbY, currState.Gamepad.LeftThumbY);
-                        xController.SetAxisValue(Xbox360Axis.RightThumbX, currState.Gamepad.RightThumbX);
-                        xController.SetAxisValue(Xbox360Axis.RightThumbY, currState.Gamepad.RightThumbY);
-                        xController.SetSliderValue(Xbox360Slider.LeftTrigger, currState.Gamepad.LeftTrigger);
-                        xController.SetSliderValue(Xbox360Slider.RightTrigger, currState.Gamepad.RightTrigger);
-
-                        xController.SubmitReport();
+                        control_config.GetController().SubmitReport();
                     }
 
                 }
@@ -99,6 +89,7 @@ namespace ControllerPriestGUI.Logic
                 {
                     ChangeMaster();
 
+                    //We check to see if ChangeMaster, succeeded. If it didn't, we can assume no controllers are currently connected.
                     if (!controllers[master].IsConnected)
                     {
                         master = -1;
@@ -131,8 +122,10 @@ namespace ControllerPriestGUI.Logic
         /// </summary>
         public void ChangeMaster()
         {
+            //Go one port up from current master, and loop to find connected controller.
             for (int i = master + 1; i != master; i++)
             {
+                //If we are over maxmimum number of ports, wrap number back to 0.
                 if (i >= 4)
                     i = 0;
 
@@ -142,6 +135,32 @@ namespace ControllerPriestGUI.Logic
                     return;
                 }
             }
+        }
+        
+        public Dictionary<Xbox360Button, GamepadButtonFlags> GetDefaultButtonMappings()
+        {
+            Dictionary<Xbox360Button, GamepadButtonFlags> result = new Dictionary<Xbox360Button, GamepadButtonFlags>();
+
+            result.Add(Xbox360Button.A, GamepadButtonFlags.A);
+            result.Add(Xbox360Button.B, GamepadButtonFlags.B);
+            result.Add(Xbox360Button.X, GamepadButtonFlags.X);
+            result.Add(Xbox360Button.Y, GamepadButtonFlags.Y);
+
+            result.Add(Xbox360Button.Up, GamepadButtonFlags.DPadUp);
+            result.Add(Xbox360Button.Down, GamepadButtonFlags.DPadDown);
+            result.Add(Xbox360Button.Left, GamepadButtonFlags.DPadLeft);
+            result.Add(Xbox360Button.Right, GamepadButtonFlags.DPadRight);
+
+            result.Add(Xbox360Button.Start, GamepadButtonFlags.Start);
+            result.Add(Xbox360Button.Back, GamepadButtonFlags.Back);
+
+            result.Add(Xbox360Button.RightThumb, GamepadButtonFlags.RightThumb);
+            result.Add(Xbox360Button.LeftThumb, GamepadButtonFlags.LeftThumb);
+
+            result.Add(Xbox360Button.LeftShoulder, GamepadButtonFlags.LeftShoulder);
+            result.Add(Xbox360Button.RightShoulder, GamepadButtonFlags.RightShoulder);
+
+            return result;
         }
 
         /// <summary>
@@ -168,7 +187,7 @@ namespace ControllerPriestGUI.Logic
         /// </summary>
         public void StartOutputController()
         {
-            xController.Connect();
+            control_config.GetController().Connect();
         }
 
         /// <summary>
@@ -176,7 +195,7 @@ namespace ControllerPriestGUI.Logic
         /// </summary>
         public void StopOutputController()
         {
-            xController.Disconnect();
+            control_config.GetController().Disconnect();
         }
 
         /// <summary>
@@ -199,5 +218,14 @@ namespace ControllerPriestGUI.Logic
             return (state.Gamepad.Buttons == masterSwitchState.Buttons);
         }
 
+        public void CurseControls()
+        {
+            control_config.CurseController();
+        }
+
+        public bool IsControlCursed()
+        {
+            return control_config.is_cursed;
+        }
     }
 }

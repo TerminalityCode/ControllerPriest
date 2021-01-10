@@ -41,6 +41,10 @@ namespace ControllerPriestGUI
         String WarnInfoType = "Information";
         String strAboutMenu = "Created By TerminalityCode\n\nBuilt With Help From ViGEm & SharpInput\n\ngithub.com/TerminalityCode";
         bool emulatedStart = false;
+
+        int timerTickCount = 0;
+        int timerTarget = 600;
+        DispatcherTimer timer;
         
         /// <summary>
         /// Initialise the MainWaindow. Setup combobox and setup arrays for referencing later.
@@ -64,7 +68,15 @@ namespace ControllerPriestGUI
             con_master_combo.Items.Add("4");
             con_master_combo.Items.Add("NONE");
             con_master_combo.SelectedIndex = 4;
+
+            con_no_controls.Items.Add("1");
+            con_no_controls.Items.Add("2");
+            con_no_controls.SelectedIndex = 0;
+
             lbl_status.Content = "!!!REMEMBER!!! Giving control has changed to R1 + L1 + L3 + R3 !!!REMEMBER!!!";
+            timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 1);
+            timer.Tick += new EventHandler(Timer_Tick);
         }
 
         /// <summary>
@@ -100,6 +112,17 @@ namespace ControllerPriestGUI
                 input.StopOutputController();
                 input.Output = -1;
             }
+        }
+
+        public void ActivateCurse(object sender, RoutedEventArgs e)
+        {
+            input.CurseControls();
+            if (input.IsControlCursed())
+                timer.Start();
+            else
+                timer.Stop();
+            
+            btn_curse_controls.Content = (input.IsControlCursed() ? "STOP CURSE" : "CURSE CONTROLS");
         }
 
         public int DetectOutput(bool[] initialCheck)
@@ -203,6 +226,20 @@ namespace ControllerPriestGUI
         private void menuItem_About(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(strAboutMenu, "About Program");
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (++timerTickCount == timerTarget)
+            {
+                timer.Stop();
+                timerTickCount = 0;
+                if (input.IsControlCursed())
+                    ActivateCurse(sender, new RoutedEventArgs());
+            }
+            TimeSpan time = TimeSpan.FromSeconds(timerTarget - timerTickCount);
+
+            lbl_timer.Content = string.Format("{0:D2}:{1:D2}", time.Minutes, time.Seconds);
         }
     }
 }

@@ -31,5 +31,9 @@
                 <MenuItem Header="About" Click="menuItem_About"/>
             </MenuItem>
         </Menu>
+        <ComboBox x:Name="con_no_controls" HorizontalAlignment="Left" Margin="640,92,0,0" VerticalAlignment="Top" Width="120"/>
+        <Label x:Name="lbl_emu_con_Copy" Content="No. Of Emulated Controls" HorizontalAlignment="Left" Margin="635,60,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.49,0.521" FontWeight="Bold" FontSize="10"/>
+        <Button x:Name="btn_curse_controls" Content="CURSE CONTROLLER&#xD;&#xA;" HorizontalAlignment="Left" Margin="499,217,0,0" VerticalAlignment="Top" Width="124" Height="21" Click="ActivateCurse"/>
+        <Label x:Name="lbl_timer" Content="10:00" HorizontalAlignment="Left" Margin="670,211,0,0" VerticalAlignment="Top" Width="60" FontSize="20"/>
     </Grid>
 </Window>
